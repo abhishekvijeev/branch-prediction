@@ -9,6 +9,7 @@
 #ifndef PREDICTOR_H
 #define PREDICTOR_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -37,6 +38,16 @@ extern const char *bpName[];
 #define WN  1			// predict NT, weak not taken
 #define WT  2			// predict T, weak taken
 #define ST  3			// predict T, strong taken
+
+#define LOGGER false
+
+#define LOG(fmt, ...)                                 \
+  do {                                                \
+  if (LOGGER) {                                       \
+  fprintf(stderr, "%s():%d -> " fmt "\n",             \
+          __func__, __LINE__, __VA_ARGS__);           \
+    }                                                 \
+  } while (0)
 
 //------------------------------------//
 //      Predictor Configuration       //
