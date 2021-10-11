@@ -73,6 +73,11 @@ gshare_train_predictor(uint32_t pc, uint8_t outcome)
   LOG("current state = %" PRIu8, current_state);
   LOG("outcome = %" PRIu8, outcome);
 
+  // Update global history register
+  gshareGHR = gshareGHR << 1;
+  gshareGHR = gshareGHR | outcome;
+
+  // Update pattern history table
   if (outcome == NOTTAKEN) {
     switch (current_state) {
       case SN:
