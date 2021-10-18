@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "gshare.h"
+#include "local.h"
 #include "predictor.h"
 
 //
@@ -55,6 +56,7 @@ init_predictor()
       break;
 
     case TOURNAMENT:
+      local_init_predictor();
       break;
 
     case CUSTOM:
@@ -87,6 +89,7 @@ make_prediction(uint32_t pc)
       break;
 
     case TOURNAMENT:
+      prediction = local_make_prediction(pc);
       break;
 
     case CUSTOM:
@@ -116,6 +119,7 @@ train_predictor(uint32_t pc, uint8_t outcome)
       break;
 
     case TOURNAMENT:
+      local_train_predictor(pc, outcome);
       break;
 
     case CUSTOM:
