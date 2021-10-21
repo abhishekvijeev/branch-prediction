@@ -1,4 +1,5 @@
 #include <inttypes.h>
+#include <stdbool.h>
 
 // gshare data structures
 uint32_t gshareGHR;         // global history register (GHR)
@@ -8,6 +9,8 @@ uint8_t *gsharePHT;         // pattern history table (PHT) of 2-bit saturating c
                             // by the GHR value
 uint32_t gsharePHTSize;     // size of PHT
 uint32_t gsharePCMask;      // bit mask to extract 'ghistoryBits' least significant bits from PC
+bool usePCHash;             // indicates whether the program counter and GHR contents must be
+                            // XOR'd to compute PHT index
 
 // gshare macro definitions
 #define GSHARE_GHR_VALUE            ((gshareGHR) & (gshareGHRMask));
@@ -15,7 +18,7 @@ uint32_t gsharePCMask;      // bit mask to extract 'ghistoryBits' least signific
 
 // gshare function declarations
 void
-gshare_init_predictor();
+gshare_init_predictor(bool use_pc_hash);
 
 uint8_t
 gshare_make_prediction(uint32_t pc);

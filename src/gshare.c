@@ -6,8 +6,9 @@
 
 // Initialize gshare data structures
 void
-gshare_init_predictor()
+gshare_init_predictor(bool use_pc_hash)
 {
+  usePCHash = use_pc_hash;
   gshareGHR = 0;
   gshareGHRMask = (1UL << ghistoryBits) - 1;
   gsharePCMask = (1UL << ghistoryBits) - 1;
@@ -30,9 +31,13 @@ gshare_make_prediction(uint32_t pc)
 {
   uint32_t ghr = GSHARE_GHR_VALUE;
   uint32_t pc_lower_bits = GSHARE_PC_LOWER_BITS(pc);
-  uint32_t pht_index = ghr ^ pc_lower_bits;
-  assert((pht_index >= 0) && (pht_index < gsharePHTSize));
+  uint32_t pht_index = ghr;
   uint8_t current_state, prediction;
+
+  if (usePCHash) {
+    pht_index = ghr ^ pc_lower_bits;
+  }
+  assert((pht_index >= 0) && (pht_index < gsharePHTSize));
 
   LOG("ghr = %" PRIu32, ghr);
   LOG("pc = 0x%" PRIx32, pc);
@@ -61,10 +66,15 @@ gshare_train_predictor(uint32_t pc, uint8_t outcome)
 {
   uint32_t ghr = GSHARE_GHR_VALUE;
   uint32_t pc_lower_bits = GSHARE_PC_LOWER_BITS(pc);
-  uint32_t pht_index = ghr ^ pc_lower_bits;
+  uint32_t pht_index = ghr;
+  uint8_t current_state, updated_state;
+
+  if (usePCHash) {
+    pht_index = ghr ^ pc_lower_bits;
+  }
   assert((pht_index >= 0) && (pht_index < gsharePHTSize));
-  uint8_t current_state = gsharePHT[pht_index];
-  uint8_t updated_state;
+
+  current_state = gsharePHT[pht_index];
 
   LOG("ghr = %" PRIu32, ghr);
   LOG("pc = 0x%" PRIx32, pc);

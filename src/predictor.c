@@ -52,7 +52,7 @@ init_predictor()
       break;
 
     case GSHARE:
-      gshare_init_predictor();
+      gshare_init_predictor(/*use_pc_hash = */true);
       break;
 
     case TOURNAMENT:
