@@ -92,19 +92,19 @@ local_train_predictor(uint32_t pc, uint8_t outcome)
   if (outcome == NOTTAKEN) {
     switch (current_predictor_state) {
       case SN:
-        localPHT[pt_index] = SN;
+        new_predictor_state = SN;
         break;
 
       case WN:
-        localPHT[pt_index] = SN;
+        new_predictor_state = SN;
         break;
 
       case WT:
-        localPHT[pt_index] = WN;
+        new_predictor_state = WN;
         break;
 
       case ST:
-        localPHT[pt_index] = WT;
+        new_predictor_state = WT;
         break;
 
       default:
@@ -115,19 +115,19 @@ local_train_predictor(uint32_t pc, uint8_t outcome)
   else if (outcome == TAKEN) {
     switch (current_predictor_state) {
       case SN:
-        localPHT[pt_index] = WN;
+        new_predictor_state = WN;
         break;
 
       case WN:
-        localPHT[pt_index] = WT;
+        new_predictor_state = WT;
         break;
 
       case WT:
-        localPHT[pt_index] = ST;
+        new_predictor_state = ST;
         break;
 
       case ST:
-        localPHT[pt_index] = ST;
+        new_predictor_state = ST;
         break;
 
       default:
@@ -136,10 +136,11 @@ local_train_predictor(uint32_t pc, uint8_t outcome)
     }
   }
 
-  new_predictor_state = localPHT[pt_index];
   assert((new_predictor_state == SN)
     || (new_predictor_state == WN)
     || (new_predictor_state == WT)
     || (new_predictor_state == ST));
+
+  localPHT[pt_index] = new_predictor_state;
   LOG("new_predictor_state = %" PRIu8 "\n", new_predictor_state);
 }

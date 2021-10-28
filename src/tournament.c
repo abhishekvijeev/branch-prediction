@@ -57,7 +57,7 @@ tournament_train_predictor(uint32_t pc, uint8_t outcome)
   uint32_t cpt_index = tournamentGHR & tournamentGHRMask;
   assert((cpt_index >= 0) && (cpt_index < tournamentCPTSize));
   uint8_t current_choice = tournamentCPT[cpt_index];
-  uint8_t updated_choice;
+  uint8_t new_choice;
 
   assert(current_choice == WG
     || current_choice == SG
@@ -75,19 +75,19 @@ tournament_train_predictor(uint32_t pc, uint8_t outcome)
   if ((global_prediction == outcome) && (local_prediction != outcome)) {
     switch (current_choice) {
       case WG:
-        tournamentCPT[cpt_index] = SG;
+        new_choice = SG;
         break;
 
       case SG:
-        tournamentCPT[cpt_index] = SG;
+        new_choice = SG;
         break;
 
       case WL:
-        tournamentCPT[cpt_index] = WG;
+        new_choice = WG;
         break;
 
       case SL:
-        tournamentCPT[cpt_index] = WL;
+        new_choice = WL;
         break;
 
       default:
@@ -98,19 +98,19 @@ tournament_train_predictor(uint32_t pc, uint8_t outcome)
   else if ((local_prediction == outcome) && (global_prediction != outcome)) {
     switch (current_choice) {
       case WG:
-        tournamentCPT[cpt_index] = WL;
+        new_choice = WL;
         break;
 
       case SG:
-        tournamentCPT[cpt_index] = WG;
+        new_choice = WG;
         break;
 
       case WL:
-        tournamentCPT[cpt_index] = SL;
+        new_choice = SL;
         break;
 
       case SL:
-        tournamentCPT[cpt_index] = SL;
+        new_choice = SL;
         break;
 
       default:
@@ -118,13 +118,17 @@ tournament_train_predictor(uint32_t pc, uint8_t outcome)
         exit(-1);
     }
   }
+  else {
+    new_choice = current_choice;
+  }
 
-  updated_choice = tournamentCPT[cpt_index];
-  assert((updated_choice == SG)
-    || (updated_choice == WG)
-    || (updated_choice == WL)
-    || (updated_choice == SL));
-  LOG("updated choice = %" PRIu8 "\n", tournamentCPT[cpt_index]);
+  assert((new_choice == SG)
+    || (new_choice == WG)
+    || (new_choice == WL)
+    || (new_choice == SL));
+
+  tournamentCPT[cpt_index] = new_choice;
+  LOG("new choice = %" PRIu8 "\n", new_choice);
 
   // Train the local and global predictors
   local_train_predictor(pc, outcome);

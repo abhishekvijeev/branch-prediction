@@ -34,7 +34,7 @@ gshare_make_prediction(uint32_t pc)
   uint32_t ghr = GSHARE_GHR_VALUE;
   uint32_t pc_lower_bits = GSHARE_PC_LOWER_BITS(pc);
   uint32_t pht_index = ghr;
-  uint8_t current_state, prediction;
+  uint8_t current_predictor_state, prediction;
 
   if (usePCHash) {
     pht_index = ghr ^ pc_lower_bits;
@@ -46,12 +46,12 @@ gshare_make_prediction(uint32_t pc)
   LOG("pc_lower_bits = %" PRIu32, pc_lower_bits);
   LOG("pht_index = %" PRIu32, pht_index);
   LOG("prediction = %" PRIu8 "\n", gsharePHT[pht_index]);
-  current_state = gsharePHT[pht_index];
+  current_predictor_state = gsharePHT[pht_index];
 
-  if ((current_state == SN) || (current_state == WN)) {
+  if ((current_predictor_state == SN) || (current_predictor_state == WN)) {
     prediction = NOTTAKEN;
   }
-  else if ((current_state == ST) || (current_state == WT)) {
+  else if ((current_predictor_state == ST) || (current_predictor_state == WT)) {
     prediction = TAKEN;
   }
   else {
@@ -69,20 +69,20 @@ gshare_train_predictor(uint32_t pc, uint8_t outcome)
   uint32_t ghr = GSHARE_GHR_VALUE;
   uint32_t pc_lower_bits = GSHARE_PC_LOWER_BITS(pc);
   uint32_t pht_index = ghr;
-  uint8_t current_state, updated_state;
+  uint8_t current_predictor_state, new_predictor_state;
 
   if (usePCHash) {
     pht_index = ghr ^ pc_lower_bits;
   }
   assert((pht_index >= 0) && (pht_index < gsharePHTSize));
 
-  current_state = gsharePHT[pht_index];
+  current_predictor_state = gsharePHT[pht_index];
 
   LOG("ghr = %" PRIu32, ghr);
   LOG("pc = 0x%" PRIx32, pc);
   LOG("pc_lower_bits = %" PRIu32, pc_lower_bits);
   LOG("pht_index = %" PRIu32, pht_index);
-  LOG("current state = %" PRIu8, current_state);
+  LOG("current state = %" PRIu8, current_predictor_state);
   LOG("outcome = %" PRIu8, outcome);
 
   // Update global history register
@@ -91,21 +91,21 @@ gshare_train_predictor(uint32_t pc, uint8_t outcome)
 
   // Update pattern history table
   if (outcome == NOTTAKEN) {
-    switch (current_state) {
+    switch (current_predictor_state) {
       case SN:
-        gsharePHT[pht_index] = SN;
+        new_predictor_state = SN;
         break;
 
       case WN:
-        gsharePHT[pht_index] = SN;
+        new_predictor_state = SN;
         break;
 
       case WT:
-        gsharePHT[pht_index] = WN;
+        new_predictor_state = WN;
         break;
 
       case ST:
-        gsharePHT[pht_index] = WT;
+        new_predictor_state = WT;
         break;
 
       default:
@@ -114,21 +114,21 @@ gshare_train_predictor(uint32_t pc, uint8_t outcome)
     }
   }
   else if (outcome == TAKEN) {
-    switch (current_state) {
+    switch (current_predictor_state) {
       case SN:
-        gsharePHT[pht_index] = WN;
+        new_predictor_state = WN;
         break;
 
       case WN:
-        gsharePHT[pht_index] = WT;
+        new_predictor_state = WT;
         break;
 
       case WT:
-        gsharePHT[pht_index] = ST;
+        new_predictor_state = ST;
         break;
 
       case ST:
-        gsharePHT[pht_index] = ST;
+        new_predictor_state = ST;
         break;
 
       default:
@@ -137,10 +137,11 @@ gshare_train_predictor(uint32_t pc, uint8_t outcome)
     }
   }
 
-  updated_state = gsharePHT[pht_index];
-  assert((updated_state == SN)
-    || (updated_state == WN)
-    || (updated_state == WT)
-    || (updated_state == ST));
-  LOG("updated state = %" PRIu8 "\n", gsharePHT[pht_index]);
+  assert((new_predictor_state == SN)
+    || (new_predictor_state == WN)
+    || (new_predictor_state == WT)
+    || (new_predictor_state == ST));
+
+  gsharePHT[pht_index] = new_predictor_state;
+  LOG("new_predictor_state = %" PRIu8 "\n", new_predictor_state);
 }
