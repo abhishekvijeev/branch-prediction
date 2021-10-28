@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "local.h"
 #include "predictor.h"
@@ -30,6 +31,7 @@ local_init_predictor(void)
     perror("localPHT calloc");
     exit(-1);
   }
+  memset(localPHT, WN, localPHTSize);
 }
 
 uint8_t

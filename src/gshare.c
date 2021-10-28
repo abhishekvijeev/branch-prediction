@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "gshare.h"
 #include "predictor.h"
@@ -23,6 +24,7 @@ gshare_init_predictor(bool use_pc_hash)
     perror("calloc");
     exit(-1);
   }
+  memset(gsharePHT, WN, gsharePHTSize);
 }
 
 // Make a prediction using the gshare predictor
