@@ -1,8 +1,8 @@
 CC=gcc
 OPTS=-g -std=c99 -Werror
 
-all: main.o predictor.o gshare.o local.o tournament.o
-	$(CC) $(OPTS) -lm -o predictor main.o predictor.o gshare.o local.o tournament.o
+all: main.o predictor.o gshare.o local.o tournament.o tage.o
+	$(CC) $(OPTS) -lm -o predictor main.o predictor.o gshare.o local.o tournament.o tage.o
 
 main.o: main.c predictor.h
 	$(CC) $(OPTS) -c main.c
@@ -18,6 +18,9 @@ local.o: local.h local.c
 
 tournament.o: tournament.h tournament.c
 	$(CC) $(OPTS) -c tournament.c
+
+tage.o: tage.h tage.c
+	$(CC) $(OPTS) -c tage.c
 
 clean:
 	rm -f *.o predictor;

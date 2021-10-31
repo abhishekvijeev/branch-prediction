@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "gshare.h"
+#include "tage.h"
 #include "tournament.h"
 #include "predictor.h"
 
@@ -60,6 +61,7 @@ init_predictor()
       break;
 
     case CUSTOM:
+      tage_init_predictor();
       break;
 
     default:
@@ -93,6 +95,7 @@ make_prediction(uint32_t pc)
       break;
 
     case CUSTOM:
+      prediction = tage_make_prediction(pc);
       break;
 
     default:
@@ -123,6 +126,7 @@ train_predictor(uint32_t pc, uint8_t outcome)
       break;
 
     case CUSTOM:
+      tage_train_predictor(pc, outcome);
       break;
 
     default:
