@@ -128,10 +128,11 @@ main(int argc, char *argv[])
   }
 
   // Print out the mispredict statistics
-  printf("Branches:        %10d\n", num_branches);
-  printf("Incorrect:       %10d\n", mispredictions);
+  // printf("Branches:        %10d\n", num_branches);
+  // printf("Incorrect:       %10d\n", mispredictions);
   float mispredict_rate = 100*((float)mispredictions / (float)num_branches);
-  printf("Misprediction Rate: %7.3f\n", mispredict_rate);
+  // printf("Misprediction Rate: %7.3f\n", mispredict_rate);
+  printf("%7.3f\n", mispredict_rate);
 
   // Cleanup
   fclose(stream);
